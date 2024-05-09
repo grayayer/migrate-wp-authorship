@@ -1,4 +1,4 @@
-# migrate-wp-authorship
+# A WordPress Plugin to Reassign WordPress Post Authors to Team Member CPT
 Decouple content authorship from user accounts by reassigning post authors to a "Team Member" custom post type. Enhance security, enable multiple authors per post, and create rich author profiles.
 
 ## Why Would You Do This?
