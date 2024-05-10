@@ -2,9 +2,10 @@
 /*
 Plugin Name: Reassign WordPress Post Authors to Team Member CPT
 Description: Decouple content authorship from user accounts by reassigning post authors to a "Team Member" custom post type. Enhance security, enable multiple authors per post, and create rich author profiles.
-Version: .3
+Version: .4
 Author: Gray Ayer
 Author URI: https://studiok40.com/
+Plugin URI: https://github.com/grayayer/migrate-wp-authorship/
 */
 
 // Hook into the admin menu to add a submenu page
@@ -25,7 +26,15 @@ function team_member_sync_menu() {
 // Render the admin page
 function team_member_sync_admin_page() {
     ?>
-    <div class="wrap" style="max-width: 900px;">
+    <style>
+        .plugin-wrap {
+            max-width: 900px;
+        }
+        h3 {
+            font-size: 1.15em;
+        }
+    </style>
+    <div class="plugin-wrap">
         <h1>Team Member Sync</h1>
 
         <h2>Instructions</h2>
@@ -34,27 +43,36 @@ function team_member_sync_admin_page() {
         <li>This works because the team member custom post type has a relationship field for each post that associates it with a wp post_author. These operations depend on user ID. Make sure that a <a href="https://www.advancedcustomfields.com/resources/user/">User field</a> has been assigned to the target post type</li>
         <li>You can select a different CPT other than blog post, but that CPT has to have the an ACF relationship field named "article_authors" that is associated with a team member CPT.</li>
         <li><strong>Warning:</strong> This tool will update the "article_authors" field on the selected post type with the team members associated with the post's author. This action cannot be undone.</li>
+        <p>For more information on how to use this tool, please refer to the <a href="https://studiok40.com/blog/decouple-wordpress-post-authors-from-user-accounts/">full tutorial</a>.</p>
         </ul>
 
         <h2>1. Pre Migration Work</h2>
+        <h3>You're going to need to create a team member post for each author of a post.</h3>
+        <p> Soon, this tool will help you identify which authors don't have a corresponding team member post, but not yet. For now, you can use it to create a list of all your authors</p>
+        <!-- Add a button which will create a list of all the blog post wp authors -->
+        <form method="post" action="">
+            <input type="submit" name="scan_post_authors_submit" value="Create List of Post Authors" class="button button-secondary">
+        </form>
+        
 
-        <h3>List team member posts that need to be created</h3>
-            Our posts have a ACF field of "author" where a content editor can designate multiple authors for a post.
-                This has been the primary way article authorship has been designated.
-                However, these authors aren't necessarily designated as a native wp post_author, You wouldn't know looking at the users table that you need to create these team posts.
-                This tool will scan the "author" field array for any users selected there that don't have corresponding team members and output a report, so you can create the missing team member posts prior to running the sync tool.
+        <h3>Do you have a half-working solution using ACF User field on the posts without a team CPT?</h3>
+        <p> As a workaround on my original project, previous developers had given the posts a ACF field of "author" where a content editor can designate one or multiple authors for a post.
+            This was the primary way article authorship had been designated when the plugin was developed.
+            However, these authors aren't necessarily designated as a native wp post_author, You wouldn't know looking at the users table that you need to create these team posts.
+            This tool will scan the "author" field array for any users selected there that don't have corresponding team members and output a report, so you can create the missing team member posts prior to running the sync tool.
+        </p>    
         <!-- Add a button to scan for posts without team members -->
         <form method="post" action="">
             <input type="submit" name="author_to_team_member_scan_submit" value="Scan for Missing Team Member Posts" class="button button-secondary">
         </form>
 
-        <h3>Scan team members and identifying any that are missing a user ID relationship</h3>
+        <h3>B) Scan team members and identifying any that are missing a user ID relationship</h3>
         <form method="post" action="">
             <input type="submit" name="team_member_scan_submit" value="Scan Team Members for Missing WP User ID" class="button button-secondary">
         </form>
         <br>
-        <h3>2. Migration of Data</h3>
-        <strong>Only do this after you've created the necessary amount of team posts necessary to re-assign to posts</strong>
+        <h2>2. Migration of Data</h2>
+        <strong>Only do this after you've created the necessary amount of team posts necessary to re-assign to posts, and you've properly designated an User ID Relationship in that Team Post</strong>
         <p>While we're assuming that you're likely applying this migration to blog posts, in case there are other post types you'd like to apply this to, you can select a different post type here.</p>
         <form method="post" action="">
             <?php
@@ -81,10 +99,53 @@ function team_member_sync_admin_page() {
             <input type="submit" name="team_member_sync_submit_all" value="Sync All" class="button button-primary">
             <input type="submit" name="team_member_sync_submit_new" value="Sync Only New Posts" class="button button-secondary">
         </form>
-
-
     </div>
     <?php
+}
+
+// hook into the scan_post_authors_submit and create a list of all the blog post wp authors
+add_action('admin_init', 'scan_post_authors_handle_submission');
+function scan_post_authors_handle_submission() {
+    if (isset($_POST['scan_post_authors_submit'])) {
+        $report = scan_posts_for_authors();
+        // Handle displaying the report similarly to our existing process.
+        // This example uses admin_notices to display the report, adjust as necessary.
+        if (!empty($report)) {
+            add_action('admin_notices', function() use ($report) {
+                echo '<div class="notice notice-info is-dismissible"><p><strong>Post Authors Scan Report:</strong></p><ul>';
+                foreach ($report as $line) {
+                    echo '<li>' . $line . '</li>';
+                }
+                echo '</ul></div>';
+            });
+        }
+    }
+}
+
+// create the function scan_posts_for_authors that will scan the post_author field for all posts and output a report
+function scan_posts_for_authors() {
+    $args = array(
+        'post_type' => 'post',
+        'posts_per_page' => -1,
+        'post_status' => 'any',
+    );
+
+    $posts = get_posts($args);
+    $report = array();
+
+    foreach ($posts as $post) {
+        $author_id = $post->post_author;
+        $author_info = get_userdata($author_id);
+        if ($author_info) {
+            $report[] = "Post: " . esc_html(get_the_title($post->ID)) . " (Post ID: {$post->ID}) has author: " . $author_info->display_name . " (User ID: $author_id)";
+        }
+    }
+
+    if (empty($report)) {
+        $report[] = "No posts found with authors.";
+    }
+
+    return $report;
 }
 
 // SCAN FOR AUTHORS THAT DON'T HAVE TEAM MEMBER POSTS YET
@@ -112,6 +173,7 @@ function handle_author_to_team_member_scan_submission() {
         }        
     }
 }
+// If there is an "author" field array, scan it for any users designated there that don't have a corresponding team members, then output this to a report
 function scan_authors_for_missing_team_members() {
     $args = array(
         'post_type' => 'post', // Adjust for your specific post type
