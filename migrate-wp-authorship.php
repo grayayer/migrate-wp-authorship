@@ -2,7 +2,7 @@
 /*
 Plugin Name: Reassign WordPress Post Authors to Team Member CPT
 Description: Decouple content authorship from user accounts by reassigning post authors to a "Team Member" custom post type. Enhance security, enable multiple authors per post, and create rich author profiles.
-Version: .4.1
+Version: .4.2
 Author: Gray Ayer
 Author URI: https://studiok40.com/
 Plugin URI: https://github.com/grayayer/migrate-wp-authorship/
@@ -23,11 +23,11 @@ function team_member_sync_menu() {
     );
 }
 
-// include the admin UI file to keep the code organized
+// Separate the admin UI file to keep our code nice and organized
 require_once plugin_dir_path(__FILE__) . 'admin-ui.php';
 
 
-// hook into the scan_post_authors_submit and create a list of all the blog post wp authors
+// hook into the scan_post_authors_submit button and create a list of all the blog post wp authors
 add_action('admin_init', 'scan_post_authors_handle_submission');
 function scan_post_authors_handle_submission() {
     if (isset($_POST['scan_post_authors_submit'])) {
@@ -65,7 +65,7 @@ function scan_post_authors_compare_team_handle_submission() {
     }
 }
 
-// function that will scan the post_author field for all posts and output a report
+// Scan the post_author field for all posts and output a report
 function scan_posts_for_authors() {
     $args = array(
         'post_type' => 'post',
@@ -246,7 +246,7 @@ function scan_team_members_without_wp_user() {
     return $report;
 }
 
-// scan the "author" field array for any users selected there that don't have corresponding team members and output a report
+// scans the "author" field array for any users selected there that don't have corresponding team members and output a report
 function scan_posts_without_team_members() {
     $args = array(
         'post_type' => 'post',
