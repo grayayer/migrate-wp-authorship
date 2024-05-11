@@ -1,2 +1,3 @@
 1. Build a tool which will automatically create those team members automatically for you.
 2. Provide ACF import files users can use for team mates, and posts. - https://imranhsayed.medium.com/saving-the-acf-json-to-your-plugin-or-theme-file-f3b72b99257b
+3. add in an option for a user to write in their specific field names for ACF, and the CPT names, instead of relying on my specific naming structures. 
