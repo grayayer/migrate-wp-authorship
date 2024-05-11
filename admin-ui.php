@@ -10,14 +10,18 @@ function team_member_sync_admin_page() {
         h3 {
             font-size: 1.15em;
         }
+        .notice.notice-info.is-dismissible {
+            margin: 1.5rem 1.5rem 2rem 0;
+        }
+
     </style>
     <div class="plugin-wrap">
-        <h1>Team Member Sync</h1>
+        <h1>Reassign WordPress Post Authors to Team Member CPT</h1>
 
         <h2>Instructions</h2>
         <ul style="list-style: disc;padding-left: 1rem;">
         <li>Use this tool to designate a different custom post type (team member) as the displayed author on the front end, instead of using the wp post_author, then generate a report.</li>
-        <li>This works because the team member custom post type has a relationship field for each post that associates it with a wp post_author. These operations depend on user ID. Make sure that a <a href="https://www.advancedcustomfields.com/resources/user/">User field</a> has been assigned to the target post type</li>
+        <li>This works because the team member custom post type (CPT) has a relationship field for each post that associates it with a wp post_author. These operations depend on user ID. Make sure that a <a href="https://www.advancedcustomfields.com/resources/user/">User field</a> has been assigned to the target post type</li>
         <li>You can select a different CPT other than blog post, but that CPT has to have the an ACF relationship field named "article_authors" that is associated with a team member CPT.</li>
         <li><strong>Warning:</strong> This tool will update the "article_authors" field on the selected post type with the team members associated with the post's author. This action cannot be undone.</li>
         <p>For more information on how to use this tool, please refer to the <a href="https://studiok40.com/blog/decouple-wordpress-post-authors-from-user-accounts/">full tutorial</a>.</p>
