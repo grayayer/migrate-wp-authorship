@@ -10,6 +10,10 @@ function team_member_sync_admin_page() {
         h3 {
             font-size: 1.15em;
         }
+        .notice.notice-info.is-dismissible {
+            margin: 1.5rem 1.5rem 2rem 0;
+        }
+
     </style>
     <div class="plugin-wrap">
         <h1>Reassign WordPress Post Authors to Team Member CPT</h1>
