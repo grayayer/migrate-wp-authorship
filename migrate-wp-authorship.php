@@ -2,7 +2,7 @@
 /*
 Plugin Name: Reassign WordPress Post Authors to Team Member CPT
 Description: Decouple content authorship from user accounts by reassigning post authors to a "Team Member" custom post type. Enhance security, enable multiple authors per post, and create rich author profiles.
-Version: .4.6
+Version: .5
 Author: Gray Ayer
 Author URI: https://studiok40.com/
 Plugin URI: https://github.com/grayayer/migrate-wp-authorship/
@@ -23,11 +23,9 @@ function team_member_sync_menu() {
     );
 }
 
-// Separate the admin UI file to keep our code nice and organized
-require_once plugin_dir_path(__FILE__) . 'admin-ui.php';
-
-// Include the utilities file
-require_once plugin_dir_path(__FILE__) . 'utilities.php';
+require_once plugin_dir_path(__FILE__) . 'includes/admin-ui.php'; // Separate the admin UI file to keep our code nice and organized
+require_once plugin_dir_path(__FILE__) . 'includes/utilities.php'; // call the utilities file which contains reusable functions
+require_once plugin_dir_path(__FILE__) . 'includes/comparisons.php'; 
 
 // This plugin depends on ACF, so this checks whether plugin is active and if not, display an admin notice to the user
 add_action('admin_init', 'team_member_sync_check_acf_active');
@@ -39,104 +37,20 @@ function team_member_sync_check_acf_active() {
     }
 }
 
-// hook into the scan_post_authors_submit button and create a list of all the blog post wp authors
-add_action('admin_init', 'scan_post_authors_handle_submission');
-function scan_post_authors_handle_submission() {
-    if (isset($_POST['scan_post_authors_submit'])) {
-        $report = scan_posts_for_authors();
-        // Handle displaying the report similarly to our existing process.
-        // This example uses admin_notices to display the report, adjust as necessary.
-        if (!empty($report)) {
-            add_action('admin_notices', function() use ($report) {
-                echo '<div class="notice notice-info is-dismissible"><p><strong>Post Authors Scan Report:</strong></p><ul>';
-                foreach ($report as $line) {
-                    echo '<li>' . $line . '</li>';
-                }
-                echo '</ul></div>';
-            });
-        }
-    }
-}
+/** Generate Reports based on Button Clicks */
 
-// hook into the scan_post_authors_compare_team_submit and compare the list of all the blog post wp authors against the team member posts that exist. The comparison will compare the name field of wp_users who are authors, against the title of team member posts
-add_action('admin_init', 'scan_post_authors_compare_team_handle_submission');
-function scan_post_authors_compare_team_handle_submission() {
-    if (isset($_POST['scan_post_authors_compare_team_submit'])) {
-        $report = comparison_of_authors_for_team_members();
-        // Handle displaying the report similarly to our existing process.
-        // This example uses admin_notices to display the report, adjust as necessary.
-        if (!empty($report)) {
-            add_action('admin_notices', function() use ($report) {
-                echo '<div class="notice notice-info is-dismissible"><p><strong>Post Authors to Team Members Comparison Report:</strong></p><ul>';
-                foreach ($report as $line) {
-                    echo '<li>' . $line . '</li>';
-                }
-                echo '</ul></div>';
-            });
-        }
-    }
-}
+// Hook into the scan_post_authors_submit button and display a list of all the blog post wp authors
+add_action('admin_init', function() {
+    handle_form_submission('scan_post_authors_submit', 'scan_posts_for_authors', 'All Post Authors');
+});
+
+// Hook into the scan_post_authors_compare_team_submit and compare the list of all the blog post wp authors against the team member posts that exist.
+// This works by comparing the name field of wp_users who are authors, against the title of team member posts
+add_action('admin_init', function() {
+    handle_form_submission('scan_post_authors_compare_team_submit', 'comparison_of_authors_for_team_members', 'Post Authors to Team Members Comparison Report');
+});
 
 
-// Scan the post_author field for all posts and output a report
-function scan_posts_for_authors() {
-    $args = array(
-        'post_type' => 'post',
-        'posts_per_page' => -1,
-        'post_status' => 'any',
-    );
-
-    $posts = get_posts($args);
-    $report = array();
-
-    foreach ($posts as $post) {
-        $author_id = $post->post_author;
-        $author_info = get_userdata($author_id);
-        if ($author_info) {
-            $report[] = "Post: " . esc_html(get_the_title($post->ID)) . " (Post ID: {$post->ID}) has author: " . $author_info->display_name . " (User ID: $author_id)";
-        }
-    }
-
-    if (empty($report)) {
-        $report[] = "No posts found with authors.";
-    }
-
-    return $report;
-}
-
-// comparison_of_authors_for_team_members that will scan the post_author field for all posts and compare it against the team member posts that exist
-function comparison_of_authors_for_team_members() {
-    $args = array(
-        'post_type' => 'post',
-        'posts_per_page' => -1,
-        'post_status' => 'any',
-    );
-
-    $posts = get_posts($args);
-    $report = array();
-
-    foreach ($posts as $post) {
-        $author_id = $post->post_author;
-        $author_info = get_userdata($author_id);
-        if ($author_info) {
-            $team_members = get_posts(array(
-                'post_type' => 'team',
-                'posts_per_page' => -1,
-                'title' => $author_info->display_name,
-            ));
-
-            if (empty($team_members)) {
-                $report[] = "Post: " . esc_html(get_the_title($post->ID)) . " (Post ID: {$post->ID}) has author: " . $author_info->display_name . " (User ID: $author_id) but no corresponding team member post.";
-            }
-        }
-    }
-
-    if (empty($report)) {
-        $report[] = "All post authors have corresponding team member posts.";
-    }
-
-    return $report;
-}
 
 // SCAN FOR AUTHORS THAT DON'T HAVE TEAM MEMBER POSTS YET
 add_action('admin_init', 'handle_author_to_team_member_scan_submission');
