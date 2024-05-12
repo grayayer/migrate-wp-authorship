@@ -1,5 +1,7 @@
 <?php
 
+if (!defined('ABSPATH')) { exit; }
+
 // This partial renders the admin page
 function team_member_sync_admin_page() {
     ?>

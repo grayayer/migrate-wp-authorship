@@ -1,13 +1,15 @@
 <?php
 
+if (!defined('ABSPATH')) { exit; }
+
 /**
-* Utility function to handle form submission.
-* @param callable $submit_function_name The function to be called when the UI button is clicked.
-* @param string $submit_function_name the name of function called by an UI button.
-* @param callable $callback A callback for the report.
-* @param string $report_title The report title.
-* @param string $addendum Extra notes for reporting.
-*/
+ * UTILITY FUNCTION TO HANDLE FORM SUBMISSION.
+ *
+ * @param callable $submit_function_name The function to be called when the UI button is clicked.
+ * @param callable $callback A callback for the report.
+ * @param string $report_title The report title.
+ * @param string $addendum Extra notes for reporting.
+ */
 
 function handle_form_submission($submit_function_name, $callback, $report_title, $addendum = '') {
     if (isset($_POST[$submit_function_name])) {
@@ -30,11 +32,12 @@ function handle_form_submission($submit_function_name, $callback, $report_title,
 
 
 /**
- * Generate a dropdown of post types
+ * GENERATE A DROPDOWN OF POST TYPES
  *
  * @param string $selected The selected post type
  * @return void
  */
+
 function generate_post_types_dropdown($selected = '') {
     $post_types = get_post_types( array('public' => true), 'objects' );
 

@@ -1,5 +1,7 @@
 <?php
 
+if (!defined('ABSPATH')) { exit; }
+
 // Scan the post_author field for all posts and output a report
 function scan_posts_for_authors() {
     $args = array(
