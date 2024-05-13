@@ -4,3 +4,6 @@
 4. look into ways to integrate a pre-git-commit hook that ensures every git commit also includes a change of plugin versioning
 5. Add a post type selector at the top of UI so that users can use for post types besides just the native 'post'
 6. improve security through $abspath and nonces
+7. bundle acf with the plugin? https://www.advancedcustomfields.com/resources/including-acf-within-a-plugin-or-theme/
+8. Move terminology from Team Member sync to be Migrate Authorship
+9. data-migration.php - perform a global nonce check before processing any form submission

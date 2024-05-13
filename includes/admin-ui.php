@@ -4,6 +4,7 @@ if (!defined('ABSPATH')) { exit; }
 
 // This partial renders the admin page
 function team_member_sync_admin_page() {
+    $plugin_nonce = wp_create_nonce('migrate_authorship_plugin');
     ?>
     <style>
         .plugin-wrap {
@@ -33,12 +34,14 @@ function team_member_sync_admin_page() {
         <h3>A) You're going to need to create a team member post for each author of a post.</h3>
         <p> First identify which authors don't have a corresponding team member post, but not yet. Click the buttons to create a list of all your authors.</p>
         <form method="post" action="">
+            <?php wp_nonce_field('migrate_authorship_plugin', 'plugin_nonce'); ?>
             <input type="submit" name="scan_post_authors_submit" value="Create List of Post Authors" class="button button-secondary"><!-- Create a list of all the blog post wp authors -->
             <input type="submit" name="scan_post_authors_compare_team_submit" value="Scan for Missing Team Member Posts" class="button button-primary"><!-- Take the list of all the blog post wp authors, and compare it against the team member posts that exist-->
         </form>
         <p>The report generated is purely for informational purposes, and will help you identify which authors don't have a corresponding team member post, so you can create that manually. After that you will need to designate an User ID Relationship in those Team Posts. <em>Before you ask, yes, next on my roadmap is to build a tool which will automatically create those team members automatically for you.</em></p>
         <h3>B) Scan team members and identifying any that are missing a user ID relationship</h3>
         <form method="post" action="">
+            <?php wp_nonce_field('migrate_authorship_plugin', 'plugin_nonce'); ?>
             <input type="submit" name="team_member_scan_submit" value="Scan Team Members for Missing WP User ID" class="button button-secondary">
         </form>
         <p>Sometimes there will be team members who aren't authors, so don't worry about those people</p>
@@ -51,6 +54,7 @@ function team_member_sync_admin_page() {
         </p>    
         <!-- A button to scan for posts without team members -->
         <form method="post" action="">
+            <?php wp_nonce_field('migrate_authorship_plugin', 'plugin_nonce'); ?>
             <input type="submit" name="author_to_team_member_scan_submit" value="Scan for Missing Team Member Posts when ACF User ID designated" class="button button-secondary">
         </form>
 
@@ -62,6 +66,7 @@ function team_member_sync_admin_page() {
             <?php
                 require_once 'utilities.php';
                 generate_post_types_dropdown('post'); // Replace 'post' with your desired post type to be auto-selected in the dropdown
+                wp_nonce_field('migrate_authorship_plugin', 'plugin_nonce');
             ?>
             <br><br>
             <select name="selected_post_status">
