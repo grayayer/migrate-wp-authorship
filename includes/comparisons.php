@@ -1,5 +1,7 @@
 <?php
 
+if (!defined('ABSPATH')) { exit; }
+
 // Scan the post_author field for all posts and output a report
 function scan_posts_for_authors() {
     $args = array(
@@ -14,8 +16,10 @@ function scan_posts_for_authors() {
     foreach ($posts as $post) {
         $author_id = $post->post_author;
         $author_info = get_userdata($author_id);
+        $author_link = get_edit_user_link($author_id);
+        $post_link = get_edit_post_link($post->ID);
         if ($author_info) {
-            $report[] = "Post: " . esc_html(get_the_title($post->ID)) . " (Post ID: {$post->ID}) has author: " . $author_info->display_name . " (User ID: $author_id)";
+            $report[] = "Post: <a href='" . esc_url($post_link) . "'>" . esc_html(get_the_title($post->ID)) . "</a> (Post ID: {$post->ID}) has assigned author: <a href='" . esc_url($author_link) ."'>" . $author_info->display_name . "</a> (User ID: $author_id)";
         }
     }
 
@@ -40,6 +44,8 @@ function comparison_of_authors_for_team_members() {
     foreach ($posts as $post) {
         $author_id = $post->post_author;
         $author_info = get_userdata($author_id);
+        $author_link = get_edit_user_link($author_id);
+        $post_link = get_edit_post_link($post->ID);        
         if ($author_info) {
             $team_members = get_posts(array(
                 'post_type' => 'team',
@@ -48,7 +54,8 @@ function comparison_of_authors_for_team_members() {
             ));
 
             if (empty($team_members)) {
-                $report[] = "Post: " . esc_html(get_the_title($post->ID)) . " (Post ID: {$post->ID}) has author: " . $author_info->display_name . " (User ID: $author_id) but no corresponding team member post.";
+                $report[] = "Post: <a href='" . esc_url($post_link) . "'>" . esc_html(get_the_title($post->ID)) . "</a> (Post ID: {$post->ID}) has assigned author: <a href='" . esc_url($author_link) ."'>" . $author_info->display_name . "</a> (User ID: $author_id) but no corresponding team member post.";
+//                $report[] = "Post: " . esc_html(get_the_title($post->ID)) . " (Post ID: {$post->ID}) has author: " . $author_info->display_name . " (User ID: $author_id) but no corresponding team member post.";
             }
         }
     }

@@ -1,4 +1,7 @@
 <?php 
+
+if (!defined('ABSPATH')) { exit; }
+
 // DATA MIGRATION FOR TEAM MEMBER SYNC
 add_action('admin_init', 'team_member_sync_handle_form_submission');
 function team_member_sync_handle_form_submission() {
