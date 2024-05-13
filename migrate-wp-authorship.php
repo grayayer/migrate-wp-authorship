@@ -2,7 +2,7 @@
 /*
 Plugin Name: Reassign WordPress Post Authors to Team Member CPT
 Description: Decouple content authorship from user accounts by reassigning post authors to a "Team Member" custom post type. Enhance security, enable multiple authors per post, and create rich author profiles.
-Version: .5.5
+Version: .5.7
 Author: Gray Ayer
 Author URI: https://studiok40.com/
 Plugin URI: https://github.com/grayayer/migrate-wp-authorship/
@@ -25,9 +25,10 @@ function migrate_authorship_menu() {
     );
 }
 
-require_once plugin_dir_path(__FILE__) . 'includes/admin-ui.php'; // Separate the admin UI file to keep our code nice and organized
-require_once plugin_dir_path(__FILE__) . 'includes/utilities.php'; // call the utilities file which contains reusable functions
-require_once plugin_dir_path(__FILE__) . 'includes/comparisons.php'; 
+require_once plugin_dir_path(__FILE__) . 'includes/admin-ui.php'; // Separates the admin UI file to keep our code nice and organized
+require_once plugin_dir_path(__FILE__) . 'includes/utilities.php'; // call the utilities file which contains reusable functions, such as the handle_form_submission function
+require_once plugin_dir_path(__FILE__) . 'includes/comparisons.php'; // call the comparisons file which contains the functions that will generate the reports passed to the handle_form_submission function
+require_once plugin_dir_path(__FILE__) . 'includes/data-migration.php'; // call the data migration file which contains the functions that will update the post meta
 
 // This plugin depends on ACF, so this checks whether plugin is active and if not, display an admin notice to the user
 add_action('admin_init', 'migrate_authorship_check_acf_active');
@@ -58,7 +59,7 @@ add_action('admin_init', function() {
     handle_form_submission('team_member_scan_submit', 'scan_team_members_without_wp_user', 'Team Member Scan Report', $addendum_msg);
 });
 
-// SCAN FOR AUTHORS THAT DON'T HAVE TEAM MEMBER POSTS YET
+// IF THEME ALREADY HAS BEEN USING WP USERS AS A MECHANISM FOR ASSIGNING MULTIPLE AUTHORS, THEN SCAN THIS FIELD WITHIN POSTS FOR AUTHORS THAT DON'T HAVE TEAM MEMBER POSTS YET
 add_action('admin_init', 'handle_author_to_team_member_scan_submission');
 function handle_author_to_team_member_scan_submission() {
     if (isset($_POST['author_to_team_member_scan_submit'])) {
@@ -83,12 +84,3 @@ function handle_author_to_team_member_scan_submission() {
         }        
     }
 }
-
-
-
-
-
-
-
-// include the data-migration.php file
-require_once plugin_dir_path(__FILE__) . 'includes/data-migration.php';

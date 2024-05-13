@@ -2,15 +2,24 @@
 
 if (!defined('ABSPATH')) { exit; }
 
-// DATA MIGRATION FOR TEAM MEMBER SYNC
+// AFTER ADDING ENOUGH TEAM MEMBERS, WE CAN NOW PERFORM THE DATA MIGRATION
 add_action('admin_init', 'migrate_authorship_handle_form_submission');
 function migrate_authorship_handle_form_submission() {
+    
+    // Sanitize and Verify our nonce
+    if (!isset($_POST['mwpa_plugin_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mwpa_plugin_nonce'])), 'migrate_authorship_plugin')) {
+        return; 
+        // die('Invalid nonce'); // displays an error message to be used while debugging
+    }
+
     if (isset($_POST['migrate_authorship_submit_all']) || isset($_POST['migrate_authorship_submit_new'])) {
+        
+        $selected_post_status = isset($_POST['selected_post_status']) ? sanitize_text_field($_POST['selected_post_status']) : ''; // Sanitize the POST data
         $selected_post_type = sanitize_text_field($_POST['selected_post_type']);
         $skip_populated = isset($_POST['migrate_authorship_submit_new']); // True for "Sync Only New Posts"
 
         // Call the processing function
-        $report = associate_blog_posts_with_team_members($selected_post_type, $skip_populated, $_POST['selected_post_status']);
+        $report = associate_blog_posts_with_team_members($selected_post_type, $skip_populated, $selected_post_status);
 
         // Determine if a report was generated but no posts were updated (specific to "Sync Only New Posts")
         if ($skip_populated && empty($report)) {
@@ -46,7 +55,7 @@ function associate_blog_posts_with_team_members($selected_post_type, $skip_popul
             'posts_per_page' => -1,
             'post_status' => $selected_post_status === 'any' ? array('publish', 'pending', 'draft', 'private') : $selected_post_status,
         );
-        error_log(print_r($args, true));
+        // error_log(print_r($args, true));
         $posts = get_posts($args);
     
         $report_details = [];
