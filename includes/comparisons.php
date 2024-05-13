@@ -4,6 +4,7 @@ if (!defined('ABSPATH')) { exit; }
 
 // Scan the post_author field for all posts and output a report
 function scan_posts_for_authors() {
+    // error_log(print_r($_POST, true));
     $args = array(
         'post_type' => 'post',
         'posts_per_page' => -1,
@@ -55,7 +56,6 @@ function comparison_of_authors_for_team_members() {
 
             if (empty($team_members)) {
                 $report[] = "Post: <a href='" . esc_url($post_link) . "'>" . esc_html(get_the_title($post->ID)) . "</a> (Post ID: {$post->ID}) has assigned author: <a href='" . esc_url($author_link) ."'>" . $author_info->display_name . "</a> (User ID: $author_id) but no corresponding team member post.";
-//                $report[] = "Post: " . esc_html(get_the_title($post->ID)) . " (Post ID: {$post->ID}) has author: " . $author_info->display_name . " (User ID: $author_id) but no corresponding team member post.";
             }
         }
     }
@@ -66,7 +66,6 @@ function comparison_of_authors_for_team_members() {
 
     return $report;
 }
-
 
 function scan_team_members_without_wp_user() {
     $args = array(

@@ -27,3 +27,8 @@ CLEAN CODE BEST PRACTICES AND MAINTAINABILITY
 
 
 
+TUTORIAL & INSTRUCTIONS
+1. Create better instructions in the readme.md file, not just reference the article I wrote
+2. Add screenshots for a "before and after" view of the front end
+3. Add sample code for backend theme construction
+4. Add screenshot of the finished backend team member selector on blog posts

@@ -18,6 +18,9 @@ function handle_form_submission($submit_function_name, $callback, $report_title,
         if (!isset($_POST['mwpa_plugin_nonce']) || !wp_verify_nonce($_POST['mwpa_plugin_nonce'], 'migrate_authorship_plugin')) {
             die('Invalid nonce');
         }
+       // in anticipation of future use where we include a dropdown, sanitize the POST data we'll be using
+       // $selected_post_status = isset($_POST['selected_post_status']) ? sanitize_text_field($_POST['selected_post_status']) : '';
+
 
         $report = $callback();
         if (!empty($report)) {
