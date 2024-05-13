@@ -5,11 +5,13 @@ if (!defined('ABSPATH')) { exit; }
 // AFTER ADDING ENOUGH TEAM MEMBERS, WE CAN NOW PERFORM THE DATA MIGRATION
 add_action('admin_init', 'migrate_authorship_handle_form_submission');
 function migrate_authorship_handle_form_submission() {
-    // Verify our nonce
-    if (!isset($_POST['mwpa_plugin_nonce']) || !wp_verify_nonce($_POST['mwpa_plugin_nonce'], 'migrate_authorship_plugin')) {
+    
+    // Sanitize and Verify our nonce
+    if (!isset($_POST['mwpa_plugin_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mwpa_plugin_nonce'])), 'migrate_authorship_plugin')) {
         return; 
         // die('Invalid nonce'); // displays an error message to be used while debugging
     }
+
     if (isset($_POST['migrate_authorship_submit_all']) || isset($_POST['migrate_authorship_submit_new'])) {
         
         $selected_post_status = isset($_POST['selected_post_status']) ? sanitize_text_field($_POST['selected_post_status']) : ''; // Sanitize the POST data

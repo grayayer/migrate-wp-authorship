@@ -2,7 +2,7 @@
 /*
 Plugin Name: Reassign WordPress Post Authors to Team Member CPT
 Description: Decouple content authorship from user accounts by reassigning post authors to a "Team Member" custom post type. Enhance security, enable multiple authors per post, and create rich author profiles.
-Version: .5.6
+Version: .5.7
 Author: Gray Ayer
 Author URI: https://studiok40.com/
 Plugin URI: https://github.com/grayayer/migrate-wp-authorship/

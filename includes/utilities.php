@@ -13,11 +13,15 @@ if (!defined('ABSPATH')) { exit; }
 
 function handle_form_submission($submit_function_name, $callback, $report_title, $addendum = '') {
     if (isset($_POST[$submit_function_name])) {
-        
-        // Verify our nonce
-        if (!isset($_POST['mwpa_plugin_nonce']) || !wp_verify_nonce($_POST['mwpa_plugin_nonce'], 'migrate_authorship_plugin')) {
-            die('Invalid nonce');
+
+        // Sanitize and Verify our nonce
+        if (!isset($_POST['mwpa_plugin_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mwpa_plugin_nonce'])), 'migrate_authorship_plugin')) {
+            return;
+            // die('Invalid nonce'); // displays an error message to be used while debugging
         }
+
+        // Sanitize the POST data
+        $_POST['selected_post_status'] = isset($_POST['selected_post_status']) ? sanitize_text_field($_POST['selected_post_status']) : '';
        // in anticipation of future use where we include a dropdown, sanitize the POST data we'll be using
        // $selected_post_status = isset($_POST['selected_post_status']) ? sanitize_text_field($_POST['selected_post_status']) : '';
 
