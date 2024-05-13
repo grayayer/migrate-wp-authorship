@@ -13,6 +13,12 @@ if (!defined('ABSPATH')) { exit; }
 
 function handle_form_submission($submit_function_name, $callback, $report_title, $addendum = '') {
     if (isset($_POST[$submit_function_name])) {
+        
+        // Verify our nonce
+        if (!isset($_POST['mwpa_plugin_nonce']) || !wp_verify_nonce($_POST['mwpa_plugin_nonce'], 'migrate_authorship_plugin')) {
+            die('Invalid nonce');
+        }
+
         $report = $callback();
         if (!empty($report)) {
             add_action('admin_notices', function() use ($report, $submit_function_name, $report_title, $addendum) {
@@ -26,7 +32,7 @@ function handle_form_submission($submit_function_name, $callback, $report_title,
                 }
                 echo '</div>';
             });
-        }
+        } 
     }
 }
 

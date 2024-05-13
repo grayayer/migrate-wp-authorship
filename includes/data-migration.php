@@ -6,6 +6,12 @@ if (!defined('ABSPATH')) { exit; }
 add_action('admin_init', 'migrate_authorship_handle_form_submission');
 function migrate_authorship_handle_form_submission() {
     if (isset($_POST['migrate_authorship_submit_all']) || isset($_POST['migrate_authorship_submit_new'])) {
+
+        // Verify our nonce
+        if (!isset($_POST['mwpa_plugin_nonce']) || !wp_verify_nonce($_POST['mwpa_plugin_nonce'], 'migrate_authorship_plugin')) {
+            die('Invalid nonce');
+        }
+
         $selected_post_type = sanitize_text_field($_POST['selected_post_type']);
         $skip_populated = isset($_POST['migrate_authorship_submit_new']); // True for "Sync Only New Posts"
 
