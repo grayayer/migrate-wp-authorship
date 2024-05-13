@@ -3,11 +3,11 @@
 if (!defined('ABSPATH')) { exit; }
 
 // DATA MIGRATION FOR TEAM MEMBER SYNC
-add_action('admin_init', 'team_member_sync_handle_form_submission');
-function team_member_sync_handle_form_submission() {
-    if (isset($_POST['team_member_sync_submit_all']) || isset($_POST['team_member_sync_submit_new'])) {
+add_action('admin_init', 'migrate_authorship_handle_form_submission');
+function migrate_authorship_handle_form_submission() {
+    if (isset($_POST['migrate_authorship_submit_all']) || isset($_POST['migrate_authorship_submit_new'])) {
         $selected_post_type = sanitize_text_field($_POST['selected_post_type']);
-        $skip_populated = isset($_POST['team_member_sync_submit_new']); // True for "Sync Only New Posts"
+        $skip_populated = isset($_POST['migrate_authorship_submit_new']); // True for "Sync Only New Posts"
 
         // Call the processing function
         $report = associate_blog_posts_with_team_members($selected_post_type, $skip_populated, $_POST['selected_post_status']);

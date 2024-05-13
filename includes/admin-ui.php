@@ -3,7 +3,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 // This partial renders the admin page
-function team_member_sync_admin_page() {
+function migrate_authorship_admin_page() {
     $plugin_nonce = wp_create_nonce('migrate_authorship_plugin');
     ?>
     <style>
@@ -84,8 +84,8 @@ function team_member_sync_admin_page() {
             </select>
             <br><br>
 
-            <input type="submit" name="team_member_sync_submit_all" value="Sync All" class="button button-primary">
-            <input type="submit" name="team_member_sync_submit_new" value="Sync Only New Posts" class="button button-secondary">
+            <input type="submit" name="migrate_authorship_submit_all" value="Sync All" class="button button-primary">
+            <input type="submit" name="migrate_authorship_submit_new" value="Sync Only New Posts" class="button button-secondary">
         </form>
     </div>
     <?php

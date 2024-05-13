@@ -2,7 +2,7 @@
 /*
 Plugin Name: Reassign WordPress Post Authors to Team Member CPT
 Description: Decouple content authorship from user accounts by reassigning post authors to a "Team Member" custom post type. Enhance security, enable multiple authors per post, and create rich author profiles.
-Version: .5.4
+Version: .5.5
 Author: Gray Ayer
 Author URI: https://studiok40.com/
 Plugin URI: https://github.com/grayayer/migrate-wp-authorship/
@@ -12,17 +12,16 @@ Plugin URI: https://github.com/grayayer/migrate-wp-authorship/
 if (!defined('ABSPATH')) { exit; }
 
 // Hook into the admin menu to add a submenu page
-add_action('admin_menu', 'team_member_sync_menu');
+add_action('admin_menu', 'migrate_authorship_menu');
 
-function team_member_sync_menu() {
+function migrate_authorship_menu() {
     add_submenu_page(
-        'tools.php', // Add to Tools menu. Change as needed.
-        'Team Member Sync',
-        'Team Member Sync',
-        'manage_options',
-        'team-member-sync',
-        'team_member_sync_admin_page'
-        
+        'tools.php', // The slug of the parent menu. This adds the submenu to the Tools menu.
+        'Migrate Posts Authorship', // The title of the page when the menu is selected.
+        'Migrate Posts Authorship', // The text of the menu item in the admin sidebar.
+        'manage_options', // The capability required to see the menu item. 'manage_options' is typically used for settings pages.
+        'migrate-authorship', // The slug of the submenu. This should be unique for this menu.
+        'migrate_authorship_admin_page' // The function that displays the page content. This function should echo the HTML it wants to display.
     );
 }
 
@@ -31,8 +30,8 @@ require_once plugin_dir_path(__FILE__) . 'includes/utilities.php'; // call the u
 require_once plugin_dir_path(__FILE__) . 'includes/comparisons.php'; 
 
 // This plugin depends on ACF, so this checks whether plugin is active and if not, display an admin notice to the user
-add_action('admin_init', 'team_member_sync_check_acf_active');
-function team_member_sync_check_acf_active() {
+add_action('admin_init', 'migrate_authorship_check_acf_active');
+function migrate_authorship_check_acf_active() {
     if (!class_exists('acf')) {
         add_action('admin_notices', function() {
             echo '<div class="notice notice-error is-dismissible"><p>The Reassign WordPress Post Authors to Team Member CPT plugin requires the <a href="https://www.advancedcustomfields.com/">Advanced Custom Fields plugin</a> to be active. Please install and activate the plugin to use this tool.</p></div>';
