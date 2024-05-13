@@ -30,7 +30,6 @@ function handle_form_submission($submit_function_name, $callback, $report_title,
     }
 }
 
-
 /**
  * GENERATE A DROPDOWN OF POST TYPES
  *

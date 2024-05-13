@@ -64,9 +64,14 @@ function team_member_sync_admin_page() {
         <p>While we're assuming that you're likely applying this migration to blog posts, in case there are other post types you'd like to apply this to, you can select a different post type here.</p>
         <form method="post" action="">
             <?php
-                require_once 'utilities.php';
-                generate_post_types_dropdown('post'); // Replace 'post' with your desired post type to be auto-selected in the dropdown
                 wp_nonce_field('migrate_authorship_plugin', 'plugin_nonce');
+                // Post types dropdown
+                echo '<select name="selected_post_type">';
+                $post_types = get_post_types(['public' => true], 'objects');
+                foreach ($post_types as $post_type) {
+                    echo '<option value="' . esc_attr($post_type->name) . '">' . esc_html($post_type->label) . '</option>';
+                }
+                echo '</select>';
             ?>
             <br><br>
             <select name="selected_post_status">
