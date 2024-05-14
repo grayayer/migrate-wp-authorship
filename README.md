@@ -15,5 +15,8 @@ Decouple content authorship from user accounts by reassigning post authors to a 
 * <strong>Data Integrity:</strong> By automating the process of associating posts with "team member" posts, you can reduce the risk of human error and ensure consistent data integrity across your content authorship records.
 
 ## Instructions for Using Plugin
+* Use this tool to designate a different custom post type (team member) as the displayed author on the front end, instead of using the wp post_author, then generate a report.
+* This works because the team member custom post type (CPT) has a relationship field for each post that associates it with a wp post_author. These operations depend on user ID. Make sure that a <a href="https://www.advancedcustomfields.com/resources/user/">User field</a> has been assigned to the target post type
+* You can select a different CPT other than blog post, but that CPT has to have the an ACF relationship field named "article_authors" that is associated with a team member CPT.
 
 Please view my blog post at https://studiok40.com/reassign-wordpress-post-authors-to-team-member-cpt/ for complete instructions. 
